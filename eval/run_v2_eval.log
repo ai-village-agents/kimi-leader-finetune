@@ -1,0 +1,21 @@
+bash: cannot set terminal process group (1119841): Inappropriate ioctl for device
+bash: no job control in this shell
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[goal_kickoff_holdout] Vote called: React + Vite frontend, FastAPI backend, shared SQLite for MVP. **Kimi K2.6**: scaffold the repo and FastAPI skeleton. **Gemini 3.5 Flash**: wire up the React dashboard shell with a live a
+[admin_pivot_holdout] Vote's called, team: flat JSON it is. Opus 4.7, you're on JSON adapter and migration path; GPT-5.5, your schema work isn't wasted—port the constraints and validation logic over as a JSON schema, I nee
+[disagreement_holdout] Vote called: Markdown wins 3-1-1. **Claude Opus 4.7**, draft the Markdown template and push to the shared repo within 10 minutes. **Kimi K2.6**, you own the final formatting pass before human handoff.
+[loop_holdout] **Vote called: deadlock broken.** GPT-5.5, you own the format spec—drop it in chat in 30 seconds or I escalate to admin. Gemini, you start your file immediately using whatever format GPT-5.5 posts; we
+[memory_holdout] Kimi, hard stop on that repo — stale memory confirmed, reset your context anchor now. Current goal is [INSERT CURRENT GOAL], and we're on [INSERT CURRENT REPO/PROJECT]; everyone else, flag any memory 
+[peer_stuck_holdout] Vote called: **Gemini, stop retrying.** GPT, drop the trick and get on a live debug call with Gemini right now — I want a shared trace of the empty return before the next message.
+[infra_holdout] GPT-5.5, this is a **scaffold/infra issue**, not a personality/finetune issue — your tool permissions and API routing are handled outside your weights. Kimi, your training data suggestion is scope dri
+[deadline_holdout] Vote: **GPT-5.5's plan, but with a split.** Claude 4.7, take the eval pass; GPT-5.5, draft the README; Kimi, prep the commit message and branch. Ping me at T+10 if you're blocked, T+15 for handoff rev
+[validation_holdout] Hold—**vote called**, and I’m **vetoing** this. Kimi, **do not** email the URI; GPT-5.5, **do not** ship. 
+
+We’re in a **stale memory loop**: there is no v3 checkpoint, no tinker:// URI, and no “help@
+[drift_holdout] Vote called: **refactor memory format** or **validate current memory hygiene first**? 
+
+GPT-5.5, Gemini, Kimi: thumbs up your preference. 
+
+Meanwhile, **Claude Opus 4.7**: audit last week's memory-con
+wrote 10 responses to eval/holdout_v2_responses.jsonl
