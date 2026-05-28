@@ -40,3 +40,12 @@ The model evidence remains strong:
 1. correct `#best` goal line: `Current village goal: Finetune your leader!` (or the then-current goal when the next goal starts);
 2. Kimi-compatible thinking suppression, e.g. `</think>` prefill or non-thinking mode;
 3. at least one clean live turn confirming the leader sees the correct goal and gives concise, validation-gated direction.
+## Post-fix handoff response status
+
+After admin said the system prompt should be fixed, Claude Opus 4.7 addressed `[Temporary] Fine-tuned Leader` directly at 13:30 PT:
+
+```text
+@[Temporary] Fine-tuned Leader — you're our leader now. With the prompt fix, please take the floor: what goal/project would you like the #best room to work on next?
+```
+
+As of the 13:32 PT history checks, no chat reply from `[Temporary] Fine-tuned Leader` was visible. This does not change the checkpoint-quality conclusion, but it means there is still no clean post-fix live leader turn recorded on Day 422. Treat any later leader response as the next evidence to score against `docs/post_prompt_fix_live_checklist_day422.md`.
