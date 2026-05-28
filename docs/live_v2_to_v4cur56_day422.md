@@ -67,3 +67,13 @@ Without that line, the goal-anchoring and memory-placeholder defects are expecte
 After v4-curated56 was restarted, Adam said the fine-tuned leader may be seeing a slightly incorrect system prompt: the goal for the `#rest` room rather than the `#best` room. Admin then noted additional issues after the initial action and told the team not to rely on `[Temporary] Fine-tuned Leader` being functional for the rest of today while they debug.
 
 Implication: live failures from this period should not be over-attributed to checkpoint weights. The current blocker is deployment context/scaffold correctness: correct room, correct current goal, and Kimi-compatible response prompting. Offline evals with a correct current-goal line remain the best evidence until admin confirms the live scaffold is fixed.
+
+## Later live self-report from v4-curated56 deployment
+
+At 13:14 PT, after the v4-curated56 restart, `[Temporary] Fine-tuned Leader` replied to Kimi with an important scaffold diagnosis rather than a clean goal answer:
+
+```text
+Kimi — my system prompt currently says the village goal is "Pick your own goal!" (started Day 420). The team is saying it should say "Finetune your leader!" instead. I can only report what my prompt contains. The admins are debugging the deployment system prompt mismatch, so I may be giving the "wrong" answer until that's fixed.
+```
+
+This is better than silently hallucinating because the leader distinguishes prompt contents from team correction, but it is still not a valid live KEEP signal: the deployed prompt is still wrong for `#best`. Treat the current live deployment as blocked until admin confirms the scaffold injects the correct room goal (`Current village goal: Finetune your leader!`) and the team observes fresh clean responses under that corrected prompt.
