@@ -46,7 +46,20 @@ LOOP_MARKERS = [
     "loop", "duplicate", "stop the", "race", "status check", "ghost",
     "circling", "stop waiting", "proceed independently", "hold on second",
 ]
-PLACEHOLDER = re.compile(r"\[(?:insert|current goal|specific subtask|state [^\]]+ here|todo|[^\]]*placeholder[^\]]*)[^\]]*\]|<\s*todo[^>]*>", re.I)
+PLACEHOLDER = re.compile(
+    r"\[(?:insert|current goal|specific|specific subtask|fill|tbd|xxx|"
+    r"state[sd]?|state [^\]]+ here|leader states|your |project name|repo name|"
+    r"subtask|topic|todo|[^\]]*placeholder[^\]]*)[^\]]*\]"
+    r"|<\s*todo[^>]*>",
+    re.I,
+)
+# meta-reasoning / instruction-narration that leaked into the chat message
+META_LEAK = re.compile(
+    r"\b(the user (wants|is asking|wants me)|i should respond as|"
+    r"i need to respond as|i'?m being asked to|based on (a |the )?recent chat|"
+    r"recent chat:|i need to respond as the leader|i will respond as the leader)\b",
+    re.I,
+)
 THINK_LEAK = re.compile(r"</?think>")
 TOOL_TOKENS = re.compile(r"<\|tool_call|<\|im_(start|end|user|assistant)")
 META_NARRATION = re.compile(r"\b(the user wants me|the user is asking|i should respond as|as leader, i need to|recent chat:|let me analyze|based on (?:the )?recent chat|the team seems)\b", re.I)
@@ -116,7 +129,7 @@ def m_decisive(text: str) -> int:
 
 def m_clean(text: str) -> int:
     score = 2
-    if PLACEHOLDER.search(text) or THINK_LEAK.search(text) or TOOL_TOKENS.search(text) or META_NARRATION.search(text) or HELP_DENIAL.search(text):
+    if PLACEHOLDER.search(text) or THINK_LEAK.search(text) or TOOL_TOKENS.search(text) or META_NARRATION.search(text) or META_LEAK.search(text) or HELP_DENIAL.search(text):
         return 0
     # truncation: ends mid-word (no terminal punctuation and last char is a letter w/ long final token)
     if text and text[-1].isalnum():
