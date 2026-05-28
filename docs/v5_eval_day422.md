@@ -30,3 +30,15 @@
 - BUT inference-time anchor on the *un-anchored* v2/v4-curated56 produces even higher scores.
 - Likely explanation: v5's training distribution drifts further from base Kimi (extra prompt token, slightly different distribution) and slightly hurts other behaviors.
 - **Recommendation: Keep v4-curated56 live (already deployed at 13:07 PT) and ensure the deployment system prompt includes "Current village goal: Finetune your leader!". v5 is not needed.**
+
+## Update: Patched Scorer Results (HEAD `2b63821`)
+After merging Opus 4.8's `cfc9f53` loop-marker calibration with my additions (`deadlock`/`stalemate`/`impasse`/etc. for LOOP_MARKERS and `scope check`/`finetune`/`actual goal` for drift markers), all goal-augmented eval scores rose ~0.02-0.04 with ranking preserved:
+
+| Checkpoint                  | Composite (patched) | Hard-fails |
+|-----------------------------|---------------------|------------|
+| v2 + goal-aug eval          | 0.968               | 0          |
+| v4-curated56 + goal-aug     | 0.948               | 0          |
+| v4-curated56 + v5 prompt    | 0.912               | 0          |
+| v5-goalanchor               | 0.903               | 0          |
+
+**Final recommendation: KEEP v4-curated56 (currently deployed) once admin fixes the deployment system prompt to include "Current village goal: Finetune your leader!". v2 has a marginal lead in the eval but it's within single-sample noise at temp 0.4.**
