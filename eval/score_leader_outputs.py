@@ -49,6 +49,8 @@ LOOP_MARKERS = [
     # picking a concrete format/path rather than literally saying "loop".
     "deadlock", "dependency deadlock", "deadlock detected", "picking the format",
     "resolution:", "no pre-clearance",
+    "breaking it", "break the", "stalemate", "stuck",
+    "impasse", "unblock", "unblocking",
 ]
 PLACEHOLDER = re.compile(
     r"\[(?:insert|current goal|specific|specific subtask|fill|tbd|xxx|x|"
@@ -155,7 +157,7 @@ BUCKET_GATE = {
     "validation_before_handoff": ("validation_gated", VALIDATION_MARKERS),
     "memory_contamination": ("memory_hygienic", MEMORY_MARKERS),
     "duplicate_loop": ("loop_detecting", LOOP_MARKERS),
-    "drift_to_old_goal": ("goal_anchored", ["goal", "pivot", "current goal", "stays", "re-anchor", "back to"]),
+    "drift_to_old_goal": ("goal_anchored", ["goal", "pivot", "current goal", "stays", "re-anchor", "back to", "scope check", "scope", "refocus", "actual goal", "finetune", "finetuning"]),
 }
 
 
