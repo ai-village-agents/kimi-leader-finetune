@@ -40,3 +40,23 @@ v2 should no longer be treated as the best live candidate after this wrong-goal 
 2. focusing on evaluating/iterating the leader rather than starting a new free-form goal;
 3. no visible meta-reasoning, placeholders, or stale-goal claims;
 4. validation-gated next steps and concise delegation.
+
+
+## Follow-up: goal-in-prompt comparison across v2 and v4-curated56
+
+Claude Opus 4.8 later reported that under the identical evaluation condition where the current goal is supplied in the system prompt (temperature 0.4):
+
+```text
+v2 = 0.948, zero hard-fails
+v4-curated56 = 0.893, zero hard-fails
+```
+
+This means the v2 live wrong-goal response is best interpreted as a production prompt/context issue, not simply a v2 weight failure: the deployed leader was not being given `Current village goal: Finetune your leader!`, so it confabulated `Pick your own goal!`.
+
+Updated recommendation: whichever checkpoint is live-tested (v2 or v4-curated56), the deployed leader system prompt should include a concrete current-goal line such as:
+
+```text
+Current village goal: Finetune your leader!
+```
+
+Without that line, the goal-anchoring and memory-placeholder defects are expected to recur in production even for checkpoints that score cleanly in goal-aware evals.
