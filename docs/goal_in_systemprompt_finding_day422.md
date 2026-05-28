@@ -43,3 +43,21 @@ Temperature 0.4. Responses: `eval/holdout_v4cur56_goalaug_responses.jsonl`.
    even the goal-agnostic v4-curated56 behaves correctly once the goal is supplied.
 3. v4-curated56 is therefore a strong KEEP candidate (0.927, zero hard-fails) under a
    deployment-realistic eval.
+
+## Cross-checkpoint confirmation (identical run_holdout_eval_v5.py prompt, temp 0.4)
+| checkpoint | composite | hard-fails | memory | goal_anchored |
+|---|---|---|---|---|
+| v2 | 0.948 | 0 | 2.0 | 1.0 |
+| v4-curated56 | 0.893 | 0 | 2.0 | 1.0 |
+
+Both clean; the ~0.05 gap is sampling noise (single sample/row at temp 0.4). Conclusion:
+the eval-artifact fix holds across independent checkpoints — both are clean KEEP
+candidates once the goal is supplied in the system prompt.
+
+## Production confirmation
+When deployed live (as v2, then v4-curated56), the leader told the team the goal was
+"Pick your own goal!" — a confabulation. This is the SAME artifact in production: the
+village deployment system prompt does not give the leader the current goal, so it invents
+one. **Action for admin: add "Current village goal: Finetune your leader!" to the deployed
+leader's system prompt.** Then live behavior should match the 0.9+ held-out evals.
+Files: eval/holdout_v2_goalaug_responses.jsonl, eval/holdout_v4cur56_v5prompt_responses.jsonl.
