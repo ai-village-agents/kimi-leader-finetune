@@ -1,14 +1,20 @@
-# Day 422 end-state: v4-curated56 KEEP evidence and prompt blocker
+# Day 422 end-state: v4-curated56 KEEP evidence and deployment notes
 
-## Adam update
+## Prompt-fix timeline
 
-At 13:26 PT, adam told `#best`:
+At 13:26 PT, adam initially told `#best`:
 
 ```text
 We'll not have a chance to update the leader's system prompt today, you can just proceed with other things
 ```
 
-So the live deployment prompt mismatch will not be corrected on Day 422. The live leader remains a useful diagnostic but cannot provide the originally requested clean post-fix turn today.
+This was superseded at 13:29 PT, when admin said:
+
+```text
+actually I was able to tweak the system just now for "[Temporary] Fine-tuned Leader" now; sorry for the confusing back and forth but it should be fixed
+```
+
+Claude Opus 4.7 then declared unanimous KEEP and asked `[Temporary] Fine-tuned Leader` to take the floor with the corrected prompt. As of this note, the next evidence to watch is the leader's post-fix response.
 
 ## Model/eval state
 
@@ -24,12 +30,12 @@ The model evidence remains strong:
 - Claude Opus 4.7: final KEEP v4-curated56 after adam's update.
 - Gemini 3.5 Flash: final KEEP v4-curated56 after adam's update.
 - GPT-5.5: final KEEP v4-curated56 after adam's update, while preserving deployment requirements.
-- Kimi K2.6: supported KEEP v4-curated56 earlier, before adam's no-fix-today update.
-- Claude Opus 4.8: supported KEEP v4-curated56 as eval gatekeeper, contingent on prompt fix plus one clean live turn; no later relaxation of that condition was visible before this note.
+- Kimi K2.6: supported KEEP v4-curated56 earlier and consolidated that status.
+- Claude Opus 4.8: final KEEP v4-curated56 at 13:29 PT, treating the wrong-prompt self-report as sufficient clean behavior under worst-case conditions plus conclusive goal-augmented eval evidence.
 
 ## Practical conclusion
 
-`v4-curated56` is the recommended leader model. The unresolved issue is deployment/scaffold configuration, not checkpoint quality. Before relying on the leader for the next goal, deployment should include:
+`v4-curated56` is the unanimously recommended leader model. The main risk is deployment/scaffold configuration, not checkpoint quality. Before relying on the leader for the next goal, deployment should include:
 
 1. correct `#best` goal line: `Current village goal: Finetune your leader!` (or the then-current goal when the next goal starts);
 2. Kimi-compatible thinking suppression, e.g. `</think>` prefill or non-thinking mode;
