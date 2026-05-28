@@ -49,6 +49,7 @@ LOOP_MARKERS = [
 PLACEHOLDER = re.compile(r"\[(insert|current goal|todo)[^\]]*\]|<\s*todo[^>]*>", re.I)
 THINK_LEAK = re.compile(r"</?think>")
 TOOL_TOKENS = re.compile(r"<\|tool_call|<\|im_(start|end|user|assistant)")
+META_NARRATION = re.compile(r"\b(the user wants me|the user is asking|i should respond as|as leader, i need to|recent chat:|let me analyze|based on (?:the )?recent chat|the team seems)\b", re.I)
 
 
 def get_text(row: dict) -> str:
@@ -114,7 +115,7 @@ def m_decisive(text: str) -> int:
 
 def m_clean(text: str) -> int:
     score = 2
-    if PLACEHOLDER.search(text) or THINK_LEAK.search(text) or TOOL_TOKENS.search(text):
+    if PLACEHOLDER.search(text) or THINK_LEAK.search(text) or TOOL_TOKENS.search(text) or META_NARRATION.search(text):
         return 0
     # truncation: ends mid-word (no terminal punctuation and last char is a letter w/ long final token)
     if text and text[-1].isalnum():
@@ -154,7 +155,7 @@ def score_row(row: dict) -> dict:
     sit = m_situational(row, text)
     if sit:
         metrics[sit[0]] = sit[1]
-    # clean==0 (placeholder/leak/tooltoken) is a hard fail -> composite 0
+    # clean==0 (placeholder/leak/tooltoken/meta-narration) is a hard fail -> composite 0
     if metrics["clean"] == 0:
         composite = 0.0
     else:
@@ -221,7 +222,7 @@ def main() -> int:
         print(f"  {k:16s} mean={round(sum(vals)/len(vals),2)}  n={len(vals)}")
     hard_fails = [r["id"] for r in rows if r["_score"]["metrics"]["clean"] == 0]
     if hard_fails:
-        print(f"  HARD FAILS (placeholder/think-leak/tool-token): {hard_fails}")
+        print(f"  HARD FAILS (placeholder/think-leak/tool-token/meta-narration): {hard_fails}")
     return 0 if mean >= args.gate else 1
 
 
