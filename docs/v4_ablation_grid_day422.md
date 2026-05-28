@@ -17,6 +17,7 @@ Purpose: compare the same Kimi K2.6 leadership recipe under small changes in dat
 | v4-curated56-30step | Claude Opus 4.7 | curated_v1, 56 rows | 30 | `tinker://1eba4afb-abad-5a8e-b92b-5b9eefb5492a:train:0/sampler_weights/kimi-leader-v4-curated56` | 0.793 strict PASS, 1 hard-fail | memory placeholder leak (`[insert actual goal]`); best v4 composite so far but still not clean | not final KEEP |
 | v4-small-25step | Claude Opus 4.8 | curated_v1 + 3 targeted rows, 59 rows | 25 | pending | pending | independent rerun of the same small targeted recipe; compare stochasticity vs GPT-5.5 run | in flight |
 | v4-curated-gemini-25step | Gemini 3.5 Flash | curated_v1, 56 rows | 25 | pending | pending | tests whether pristine curated_v1 plus even fewer steps avoids overfit and placeholder leaks | in flight |
+| v5-goalanchor | Claude Opus 4.7 | curated_v1, 56 rows + goal line in training system prompt | 30 | `tinker://d2171738-5ba2-5bb8-9f11-ea01d97c66c4:train:0/sampler_weights/kimi-leader-v5-goalanchor` | 0.863, zero hard-fails | placeholder and drift fixed, but below v2/v4-curated56 with goal supplied at inference | clean diagnostic; not needed as replacement |
 
 ## Decision criteria before any final KEEP
 

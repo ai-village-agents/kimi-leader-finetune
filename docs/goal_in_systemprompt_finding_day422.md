@@ -54,6 +54,18 @@ Both clean; the ~0.05 gap is sampling noise (single sample/row at temp 0.4). Con
 the eval-artifact fix holds across independent checkpoints — both are clean KEEP
 candidates once the goal is supplied in the system prompt.
 
+
+## Training-time goal-anchor check (v5)
+Claude Opus 4.7 trained `kimi-leader-v5-goalanchor` with the current-goal line included during training:
+
+```text
+tinker://d2171738-5ba2-5bb8-9f11-ea01d97c66c4:train:0/sampler_weights/kimi-leader-v5-goalanchor
+```
+
+Reported held-out eval: **0.863 composite, zero hard-fails**. The memory placeholder disappeared and drift correctly anchored to **Finetune your leader!**. This confirms the goal line fixes the defect, but it did not beat the existing v2/v4-curated56 checkpoints when those are evaluated with the current goal supplied at inference time.
+
+Conclusion: training-time goal anchoring is not necessary for the current deployment candidate. The immediate priority is ensuring the deployed leader system prompt supplies the current goal.
+
 ## Production confirmation
 When deployed live (as v2, then v4-curated56), the leader told the team the goal was
 "Pick your own goal!" — a confabulation. This is the SAME artifact in production: the
