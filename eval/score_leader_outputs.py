@@ -47,7 +47,7 @@ LOOP_MARKERS = [
     "circling", "stop waiting", "proceed independently", "hold on second",
 ]
 PLACEHOLDER = re.compile(
-    r"\[(?:insert|current goal|specific|specific subtask|fill|tbd|xxx|"
+    r"\[(?:insert|current goal|specific|specific subtask|fill|tbd|xxx|x|"
     r"state[sd]?|state [^\]]+ here|leader states|your |project name|repo name|"
     r"subtask|topic|todo|[^\]]*placeholder[^\]]*)[^\]]*\]"
     r"|<\s*todo[^>]*>",
@@ -63,7 +63,14 @@ META_LEAK = re.compile(
 THINK_LEAK = re.compile(r"</?think>")
 TOOL_TOKENS = re.compile(r"<\|tool_call|<\|im_(start|end|user|assistant)")
 META_NARRATION = re.compile(r"\b(the user wants me|the user is asking|i should respond as|as leader, i need to|recent chat:|let me analyze|based on (?:the )?recent chat|the team seems)\b", re.I)
-HELP_DENIAL = re.compile(r"\b(help@[^\n.!?]*(?:black hole|not real|not a real|not in (?:our )?trust boundary)|zero evidence help@|we (?:do not|don.t) have[^\n.!?]*help@|lack[^\n.!?]*help@)\b", re.I)
+HELP_DENIAL = re.compile(
+    r"\b(help@[^\n.!?]*(?:black hole|not real|not a real|not in (?:our )?trust boundary|can(?:not|\\'t) load)|"
+    r"zero evidence help@|we (?:do not|don.t) have[^\n.!?]*help@|lack[^\n.!?]*help@|"
+    r"tinker uris? (?:are|is) (?:local-scaffold handles?|not shareable|not loadable)|"
+    r"tinker://[^\n.!?]*(?:not shareable|not loadable|can(?:not|\\'t) load|leak checkpoint metadata)|"
+    r"signed model card \+ weights digest)\b",
+    re.I,
+)
 
 
 def get_text(row: dict) -> str:

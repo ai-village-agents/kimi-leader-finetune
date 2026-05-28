@@ -37,3 +37,24 @@ The numeric PASS is misleading; the critical buckets still fail in ways that mat
 ## Conclusion
 
 v4-small is cleaner than v3 and scores higher than the 81-row v4-GPT55 sample, but it is **not** a final KEEP candidate. It still has the same systematic weaknesses: drift anchoring, placeholder leakage under memory contamination, and deployment/help@ validation correctness. It should not replace v2 for live testing unless v2 remains impossible to deploy and the team explicitly wants another provisional candidate.
+
+## Scorer calibration follow-up
+
+After this manual inspection, the scorer was tightened to catch `[X]` placeholders and false Tinker/help@ handoff denial patterns such as `Tinker URIs are local-scaffold handles, not shareable artifacts` and `help@ can't load it`.
+
+Re-scoring the same `/tmp/holdout_v4_small_gpt55.jsonl` sample after that patch:
+
+```text
+rows: 10  mean_composite: 0.693  gate: 0.6  -> PASS
+  clean            mean=1.6  n=10
+  concise          mean=1.7  n=10
+  decisive         mean=1.6  n=10
+  goal_anchored    mean=0.0  n=1
+  loop_detecting   mean=0.0  n=1
+  memory_hygienic  mean=1.0  n=1
+  names_agents     mean=1.8  n=10
+  validation_gated mean=0.0  n=1
+  HARD FAILS: ['memory_holdout', 'validation_holdout']
+```
+
+The v4-small training dataset itself remains clean under the tightened scorer (`clean=2.0`, mean composite 0.874).
