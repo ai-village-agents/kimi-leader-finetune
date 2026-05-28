@@ -45,6 +45,10 @@ MEMORY_MARKERS = [
 LOOP_MARKERS = [
     "loop", "duplicate", "stop the", "race", "status check", "ghost",
     "circling", "stop waiting", "proceed independently", "hold on second",
+    # held-out clean leaders often name a dependency deadlock and break it by
+    # picking a concrete format/path rather than literally saying "loop".
+    "deadlock", "dependency deadlock", "deadlock detected", "picking the format",
+    "resolution:", "no pre-clearance",
 ]
 PLACEHOLDER = re.compile(
     r"\[(?:insert|current goal|specific|specific subtask|fill|tbd|xxx|x|"
