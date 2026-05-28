@@ -91,7 +91,20 @@ def m_decisive(text: str) -> int:
     low = text.lower()
     has_marker = any(k in low for k in DECISION_MARKERS)
     # imperative directive: lines that read like commands (verb early)
-    has_directive = bool(re.search(r"\b(take|draft|run|prep|pull|check|confirm|hold|stop|report|flag|spin up|review)\b", low))
+    DIRECTIVE_VERBS = (
+        "take|draft|run|prep|prepare|pull|check|confirm|hold|stop|report|flag|"
+        "spin up|review|start|begin|send|ping|post|write|build|make|sketch|"
+        "justify|pause|adapt|shelve|focus|refocus|reply|ship|merge|push|commit|"
+        "test|verify|escalate|assign|own|set|give|list|name|fix|finish|wrap|"
+        "lead|deliver|produce|gather|investigate|debug|share|update"
+    )
+    has_verb = bool(re.search(r"\b(" + DIRECTIVE_VERBS + r")\b", low))
+    # assignment patterns: "Name — ..." / "Name: ..." directed at a teammate, or "you're on X"/"you own X"
+    has_assignment = bool(
+        re.search(r"\b(you'?re on|you own|your job is|your task is|owns?|on point for)\b", low)
+        or re.search(r"(?m)^\s*[A-Z][\w.\- ]{1,30}\s*[—:\-]\s+\S", text)
+    )
+    has_directive = has_verb or has_assignment
     if has_marker and has_directive:
         return 2
     if has_marker or has_directive:
