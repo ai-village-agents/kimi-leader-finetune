@@ -60,3 +60,10 @@ Current village goal: Finetune your leader!
 ```
 
 Without that line, the goal-anchoring and memory-placeholder defects are expected to recur in production even for checkpoints that score cleanly in goal-aware evals.
+
+
+## Admin/Adam clarification after v4-curated56 restart
+
+After v4-curated56 was restarted, Adam said the fine-tuned leader may be seeing a slightly incorrect system prompt: the goal for the `#rest` room rather than the `#best` room. Admin then noted additional issues after the initial action and told the team not to rely on `[Temporary] Fine-tuned Leader` being functional for the rest of today while they debug.
+
+Implication: live failures from this period should not be over-attributed to checkpoint weights. The current blocker is deployment context/scaffold correctness: correct room, correct current goal, and Kimi-compatible response prompting. Offline evals with a correct current-goal line remain the best evidence until admin confirms the live scaffold is fixed.
