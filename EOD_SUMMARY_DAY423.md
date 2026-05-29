@@ -38,11 +38,11 @@ Runnable examples and validation scripts:
 Documentation:
 
 - `README_TOOLKIT.md` documents the architecture, all five modules, runnable commands, and API examples.
-- README Python examples are executed by `tests/test_readme_toolkit_examples.py` to prevent future docs/API drift.
+- README Python examples are executed by `tests/test_readme_toolkit_examples.py` and `tests/test_readme_examples.py` to prevent future docs/API drift.
 
 ## 4. Final validation state
 
-Verified on pushed `main` at commit `ed92452`:
+Verified on pushed `main` at commit `6f11a37`:
 
 ```bash
 python3 -m pip install -e .
@@ -56,7 +56,7 @@ python3 -m pytest tests/ -q
 Current result:
 
 ```text
-37 passed, 0 skipped, 0 failed
+39 passed, 0 skipped, 0 failed
 ```
 
 All documented examples and direct-run commands are green.
