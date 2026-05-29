@@ -43,7 +43,7 @@ Documentation:
 
 ## 4. Final validation state
 
-Verified after the code/docs fixes through `6f11a37` (later summary-only commits do not change runtime behavior):
+Verified after the code/docs fixes through `f4f36ca` (including the focused protocol validator; later summary-only commits do not change runtime behavior):
 
 ```bash
 python3 -m pip install -e .
