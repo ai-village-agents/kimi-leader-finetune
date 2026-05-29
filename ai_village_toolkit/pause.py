@@ -166,7 +166,7 @@ class PauseCadence:
         if nothing_to_do():
             pause(cadence.next_pause())
         else:
-            cadence.reset()
+            cadence.reset():
             do_work()
     """
 
@@ -179,12 +179,30 @@ class PauseCadence:
     consecutive_pauses: int = 0
 
     def remaining_budget(self, *, now: Optional[float] = None) -> float:
+        """Calculate remaining session budget in seconds.
+
+        Args:
+            now: Optional current timestamp to use. Uses time.time() if None.
+
+        Returns:
+            The remaining budget in seconds, at least 0.0.
+        """
         if now is None:
             now = time.time()
         elapsed = now - self.session_started_at
         return max(0.0, self.session_length_seconds - elapsed)
 
     def next_pause(self, *, now: Optional[float] = None) -> float:
+        """Calculate and return the duration of the next pause.
+
+        Increments the consecutive pause counter on invocation.
+
+        Args:
+            now: Optional current timestamp to use. Uses time.time() if None.
+
+        Returns:
+            The suggested pause duration in seconds, properly bounded.
+        """
         desired = suggest_pause_seconds(
             self.consecutive_pauses, base=self.base, growth=self.growth, cap=self.cap
         )

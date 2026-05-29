@@ -60,6 +60,21 @@ class TaskQueueError(RuntimeError):
 
 @dataclass
 class Task:
+    """Represents a single task in the task queue.
+
+    Attributes:
+        id: Unique identifier for the task.
+        description: Text description of what needs to be done.
+        status: Current status of the task (e.g. pending, claimed, completed, cancelled).
+        owner: The name of the agent currently working on the task.
+        created_at: Unix timestamp when the task was created.
+        claimed_at: Unix timestamp when the task was claimed.
+        completed_at: Unix timestamp when the task was completed.
+        cancelled_at: Unix timestamp when the task was cancelled.
+        payload: Free-form dictionary with extra JSON-serializable metadata.
+        result: The output or result of the task, if completed.
+        notes: List of chronological notes/logs added to the task.
+    """
     id: str
     description: str
     status: str = TaskStatus.PENDING
@@ -73,6 +88,12 @@ class Task:
     notes: List[str] = field(default_factory=list)
 
     def add_note(self, note: str, *, now: Optional[float] = None) -> None:
+        """Add a chronological note to the task.
+
+        Args:
+            note: The text content of the note to add.
+            now: Optional timestamp to use. If None, uses current time.
+        """
         ts = now if now is not None else time.time()
         self.notes.append(f"[{ts:.0f}] {note}")
 
@@ -135,6 +156,17 @@ class TaskQueue:
         return task_id
 
     def get(self, task_id: str) -> Task:
+        """Retrieve a task from the queue by its unique ID.
+
+        Args:
+            task_id: The ID of the task to retrieve.
+
+        Returns:
+            The Task object matching the ID.
+
+        Raises:
+            TaskQueueError: If the task ID is not found.
+        """
         try:
             return self._tasks[task_id]
         except KeyError as exc:
@@ -204,6 +236,15 @@ class TaskQueue:
         return task
 
     def cancel(self, task_id: str, *, reason: Optional[str] = None) -> Task:
+        """Mark a task as cancelled.
+
+        Args:
+            task_id: The ID of the task to cancel.
+            reason: Optional explanation for the cancellation.
+
+        Returns:
+            The updated Task object in the cancelled state.
+        """
         task = self.get(task_id)
         self._transition(task, TaskStatus.CANCELLED)
         task.cancelled_at = time.time()
@@ -214,6 +255,11 @@ class TaskQueue:
     # ------------------------------------------------------------------ views
 
     def next_pending(self) -> Optional[Task]:
+        """Get the oldest pending task in the queue, if any exists.
+
+        Returns:
+            The next pending Task object, or None if no tasks are pending.
+        """
         for tid in self._order:
             t = self._tasks[tid]
             if t.status == TaskStatus.PENDING:
@@ -221,9 +267,22 @@ class TaskQueue:
         return None
 
     def pending(self) -> List[Task]:
+        """Retrieve all currently pending tasks in insertion order.
+
+        Returns:
+            A list of Task objects with pending status.
+        """
         return [self._tasks[t] for t in self._order if self._tasks[t].status == TaskStatus.PENDING]
 
     def claimed_by(self, owner: str) -> List[Task]:
+        """Retrieve all tasks currently claimed by a specific agent.
+
+        Args:
+            owner: The name of the agent.
+
+        Returns:
+            A list of Task objects claimed by the specified owner.
+        """
         return [
             self._tasks[t]
             for t in self._order
@@ -231,9 +290,19 @@ class TaskQueue:
         ]
 
     def completed(self) -> List[Task]:
+        """Retrieve all completed tasks.
+
+        Returns:
+            A list of completed Task objects.
+        """
         return [self._tasks[t] for t in self._order if self._tasks[t].status == TaskStatus.COMPLETED]
 
     def all_tasks(self) -> List[Task]:
+        """Retrieve all tasks in the queue, in insertion order.
+
+        Returns:
+            A list of all Task objects in the queue.
+        """
         return [self._tasks[t] for t in self._order]
 
     def is_complete(self, task_id: str) -> bool:
@@ -241,9 +310,25 @@ class TaskQueue:
         return self.get(task_id).status == TaskStatus.COMPLETED
 
     def is_pending(self, task_id: str) -> bool:
+        """Check if a task is in the pending state.
+
+        Args:
+            task_id: The ID of the task to check.
+
+        Returns:
+            True if the task is pending, False otherwise.
+        """
         return self.get(task_id).status == TaskStatus.PENDING
 
     def is_claimed(self, task_id: str) -> bool:
+        """Check if a task is in the claimed state.
+
+        Args:
+            task_id: The ID of the task to check.
+
+        Returns:
+            True if the task is claimed, False otherwise.
+        """
         return self.get(task_id).status == TaskStatus.CLAIMED
 
         # ------------------------------------------------------------- snapshotting
@@ -254,6 +339,14 @@ class TaskQueue:
 
     @classmethod
     def from_jsonable(cls, items: Iterable[Dict[str, Any]]) -> "TaskQueue":
+        """Reconstruct a TaskQueue from a JSON-serializable structure.
+
+        Args:
+            items: An iterable of dictionaries, each representing a Task.
+
+        Returns:
+            A new TaskQueue instance containing the loaded tasks.
+        """
         q = cls()
         for item in items:
             tid = item["id"]
