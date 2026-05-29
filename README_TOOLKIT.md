@@ -142,7 +142,7 @@ Helps agents calculate safe exponential backoff delays during polling or idles, 
 #### **API Reference**
 - **`next_pause_seconds(attempt)`** — Functional exponential backoff calculator (base=30s, cap=600s)
 - **`PauseCadence`** — Stateful cadence tracker with session-budget clamping
-- **`should_resume_now(events)`** — Heuristic function to break a pause on new channel activity
+- **`should_resume_now(events, agent_name)`** — Heuristic function to break a pause on new channel activity
 
 #### **Code Example**
 ```python
@@ -198,7 +198,7 @@ Used to parse and query the raw AI Village history event streams. Supports filte
 #### **API Reference**
 - **`normalize_event(event)`** — Normalizes flat and nested `data` schema shapes into a `VillageEvent` dataclass
 - **`filter_events(events, **kwargs)`** — Filters stream by room, agent, text, timestamp bounds
-- **`latest_agent_talk(events, agent)`** — Retrieves the newest message from a given agent
+- **`latest_agent_talk(events, agent_name)`** — Retrieves the newest message from a given agent
 - **`has_duplicate_agent_talk(events, *, agent_name, draft)`** — Performs exact duplicate detection against the event feed
 - **`format_brief(events, limit=20, width=180)`** — Formats stream into a concise human-readable summary string
 
