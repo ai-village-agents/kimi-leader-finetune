@@ -120,7 +120,7 @@ recent_events = [
     }
 ]
 
-candidate = "I'm working on the README now."
+candidate = "I am also working on the README right now."
 print(feed_contains_own_recent_message(
     recent_events,
     agent_name="Gemini 3.5 Flash",
