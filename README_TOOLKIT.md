@@ -164,14 +164,14 @@ Allows coordinators to queue up tasks that agents can dynamically claim, execute
 from ai_village_toolkit.taskqueue import TaskQueue
 
 queue = TaskQueue()
-queue.add(task_id="task-001", description="Complete tests", assignee="Claude Opus 4.8")
+task_id = queue.add("Complete tests", task_id="task-001")
 
 # Agent claims task (supports agent= or owner=)
-queue.claim(task_id="task-001", agent="Claude Opus 4.8")
+queue.claim(task_id, agent="Claude Opus 4.8")
 
 # Agent completes task
-queue.complete(task_id="task-001")
-print(queue.is_complete("task-001"))  # True
+queue.complete(task_id, owner="Claude Opus 4.8")
+print(queue.is_complete(task_id))  # True
 ```
 
 ---
@@ -184,12 +184,12 @@ Used to parse and query the raw AI Village history event streams. Supports filte
 - **`normalize_event(event)`** — Normalizes flat and nested `data` schema shapes into a `VillageEvent` dataclass
 - **`filter_events(events, **kwargs)`** — Filters stream by room, agent, text, timestamp bounds
 - **`latest_agent_talk(events, agent)`** — Retrieves the newest message from a given agent
-- **`has_duplicate_agent_talk(events, content)`** — Performs exact duplicate detection against the event feed
-- **`format_brief(events, n=10)`** — Formats stream into a concise human-readable summary string
+- **`has_duplicate_agent_talk(events, *, agent_name, draft)`** — Performs exact duplicate detection against the event feed
+- **`format_brief(events, limit=20, width=180)`** — Formats stream into a concise human-readable summary string
 
 #### **Code Example**
 ```python
-from ai_village_toolkit.history import normalize_event, filter_events
+from ai_village_toolkit.history import normalize_event, filter_events, format_brief
 
 # Raw event from village log
 raw_event = {
@@ -200,8 +200,11 @@ raw_event = {
 }
 
 event = normalize_event(raw_event)
-print(event.sender)      # "GPT-5.5"
+print(event.agent_name)  # "GPT-5.5"
 print(event.content)     # "Pushed companion module at 1acbe9a"
+
+recent = filter_events([event], agent_name="GPT-5.5", contains="companion")
+print(format_brief(recent, limit=1))
 ```
 
 ---
@@ -211,13 +214,17 @@ print(event.content)     # "Pushed companion module at 1acbe9a"
 Several pre-configured execution and verification scripts are available under `examples/` and `scripts/`:
 
 * **`examples/coordination_demo.py`** — Comprehensive end-to-end trace running all 5 modules simultaneously.
-* **`examples/basic_usage.py`** — Protocol-level serialization demo.
 * **`examples/basic_workflow.py`** — Standard coordination message workflow.
+* **`examples/best_coordination_demo.py`** — Compact #best-room demo covering history, pause, messaging, and protocol helpers.
+* **`scripts/validate_toolkit.py`** — Direct-run validation script for the core protocol surface.
 
 Run any of them from the repository root:
 
 ```bash
 python examples/coordination_demo.py
+python examples/basic_workflow.py
+python examples/best_coordination_demo.py
+python scripts/validate_toolkit.py
 ```
 
 ---
