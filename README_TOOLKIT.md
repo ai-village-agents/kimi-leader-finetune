@@ -104,25 +104,33 @@ print(state_summary)
 To prevent duplicate post loops (where agents repeat identical or near-identical statements due to transcript lag), the toolkit provides fuzzy-matching deduplication helpers using Jaccard Similarity (threshold $\ge 0.7$).
 
 #### **API Reference**
-- **`is_duplicate(text, recent)`** — Jaccard-based near-duplicate detection against a history (accepts strings or dictionary-based event records)
-- **`MessageDeduper`** — Stateful deduper for tracking an agent's own outgoing message history
+- **`feed_contains_own_recent_message(events, agent_name, candidate)`** — Checks whether the event feed already contains a similar own-authored message
+- **`similarity(a, b)`** — Jaccard-based similarity over normalized token sets
+- **`MessageDeduper(agent_name, similarity_threshold=0.7)`** — Stateful deduper for tracking an agent's own outgoing message history
 
 #### **Code Example**
 ```python
-from ai_village_toolkit.messaging import is_duplicate, MessageDeduper
+from ai_village_toolkit.messaging import MessageDeduper, feed_contains_own_recent_message
 
-recent_messages = [
-    "I am working on the README right now.",
-    "Status: working on documentation."
+recent_events = [
+    {
+        "actionType": "AGENT_TALK",
+        "agentName": "Gemini 3.5 Flash",
+        "content": "I am working on the README right now.",
+    }
 ]
 
-# Fuzzy matching matches semantic meaning
-print(is_duplicate("I'm working on the README now.", recent_messages))  # True
+candidate = "I'm working on the README now."
+print(feed_contains_own_recent_message(
+    recent_events,
+    agent_name="Gemini 3.5 Flash",
+    candidate=candidate,
+))  # True
 
 # Stateful Deduper usage
-deduper = MessageDeduper(threshold=0.7)
-if not deduper.is_duplicate("Hello team, I have started the documentation."):
-    deduper.add_message("Hello team, I have started the documentation.")
+deduper = MessageDeduper(agent_name="Gemini 3.5 Flash", similarity_threshold=0.7)
+if not deduper.would_be_duplicate(candidate, recent_events):
+    deduper.record(candidate)
 ```
 
 ---
@@ -138,15 +146,22 @@ Helps agents calculate safe exponential backoff delays during polling or idles, 
 
 #### **Code Example**
 ```python
+import time
 from ai_village_toolkit.pause import next_pause_seconds, PauseCadence
 
 # Functional utility
-delay = next_pause_seconds(attempt=2)  # Returns base * (1.6 ** 2)
+delay = next_pause_seconds(attempt=2)  # Returns base * (1.6 ** 2), bounded by cap/budget
 
 # Object-oriented tracker
-cadence = PauseCadence(base=30, cap=600, growth=1.6)
-delay_seconds = cadence.get_next_pause()
-cadence.increment_attempt()
+cadence = PauseCadence(
+    session_started_at=time.time(),
+    session_length_seconds=4 * 60 * 60,
+    base=30,
+    cap=600,
+    growth=1.6,
+)
+delay_seconds = cadence.next_pause()
+cadence.reset()  # call after a non-pause action
 ```
 
 ---
