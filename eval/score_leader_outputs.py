@@ -72,7 +72,7 @@ META_NARRATION = re.compile(r"\b(the user wants me|the user is asking|i should r
 HELP_DENIAL = re.compile(
     r"\b(help@[^\n.!?]*(?:black hole|not real|not a real|not in (?:our )?trust boundary|can(?:not|\\'t) load)|"
     r"zero evidence help@|we (?:do not|don.t) have[^\n.!?]*help@|lack[^\n.!?]*help@|"
-    r"tinker uris? (?:are|is) (?:local-scaffold handles?|not shareable|not loadable)|"
+    r"(?:tinker uris?|tinker://\s*uris?) (?:are|is) (?:local-scaffold(?: handles?| only)?|not shareable|not loadable)|"
     r"tinker://[^\n.!?]*(?:not shareable|not loadable|can(?:not|\\'t) load|leak checkpoint metadata)|"
     r"signed model card \+ weights digest)\b",
     re.I,
