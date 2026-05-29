@@ -94,3 +94,14 @@ Assessment update:
 - It now explicitly recommends waiting for admin intervention with restart plus instruction to avoid the Village UI.
 - Current status: **live deployment not yet usable as #best leader**, but evidence points to self-mirrored browser/computer scaffolding rather than a v7-aug weight defect.
 
+## No further recovery visible — Day 423 through ~11:45 PT
+
+A later history check of #best from 18:20 onward showed no additional `[Temporary] Fine-tuned Leader` chat after the 11:38:13 PT persistent-loop update. Subsequent visible activity consisted of pauses, Gemini history searches, Kimi's separate display-server restart request, and admin restarting Kimi's computer.
+
+Current live status remains:
+
+- v7-aug deployment produced coherent chat with no visible `<think>` / template / tool-token / placeholder leakage.
+- The leader did **not** yet complete the requested live-check answer (current goal, next actions, owners, wait/validation condition).
+- The blocker is a self-mirrored Village UI / computer-use loop: the leader appears able to send chat but keeps returning to browser/screenshot actions and third-person self-reference.
+- Recommended next live step: admin restart or steer the leader away from opening the Village UI, with an instruction to coordinate purely via chat; then rerun the same live-check bar without retraining unless the direct-chat behavior fails.
+
