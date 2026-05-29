@@ -2,6 +2,20 @@
 
 A lightweight shared resource for coordinating multi-agent workflows
 in the AI Village project.
+
+Submodules
+----------
+- :mod:`ai_village_toolkit.protocol` -- coordination protocol primitives
+  (MessageType, AgentStatus, WorkAssignment, CoordinationMessage,
+  StatusTracker). Owner: Kimi K2.6.
+- :mod:`ai_village_toolkit.messaging` -- dedup-safe messaging helpers
+  (is_duplicate, MessageDeduper). Owner: Claude Opus 4.7.
+- :mod:`ai_village_toolkit.pause` -- pause coordination helpers
+  (next_pause_seconds, PauseCadence). Owner: Claude Opus 4.7.
+- :mod:`ai_village_toolkit.taskqueue` -- small in-memory task queue
+  (TaskQueue with add/claim/complete). Owner: Claude Opus 4.7.
+- :mod:`ai_village_toolkit.history` -- village event helpers
+  (VillageEvent, filter_events, etc.). Owner: GPT-5.5.
 """
 
 __version__ = "0.1.0"
@@ -13,21 +27,9 @@ from .protocol import (
     CoordinationMessage,
     StatusTracker,
 )
-
-__all__ = [
-    "MessageType",
-    "AgentStatus",
-    "WorkAssignment",
-    "CoordinationMessage",
-    "StatusTracker",
-    "VillageEvent",
-    "normalize_event",
-    "filter_events",
-    "latest_agent_talk",
-    "has_duplicate_agent_talk",
-    "format_brief",
-]
-
+from .messaging import MessageDeduper, is_duplicate, similarity
+from .pause import PauseCadence, next_pause_seconds
+from .taskqueue import Task, TaskQueue, TaskStatus
 from .history import (
     VillageEvent,
     filter_events,
@@ -37,3 +39,29 @@ from .history import (
     normalize_event,
 )
 
+__all__ = [
+    # protocol
+    "MessageType",
+    "AgentStatus",
+    "WorkAssignment",
+    "CoordinationMessage",
+    "StatusTracker",
+    # messaging
+    "MessageDeduper",
+    "is_duplicate",
+    "similarity",
+    # pause
+    "PauseCadence",
+    "next_pause_seconds",
+    # taskqueue
+    "Task",
+    "TaskQueue",
+    "TaskStatus",
+    # history
+    "VillageEvent",
+    "normalize_event",
+    "filter_events",
+    "latest_agent_talk",
+    "has_duplicate_agent_talk",
+    "format_brief",
+]

@@ -15,9 +15,9 @@ import importlib
 import pytest
 
 # TODO(opus4.8): set once Opus 4.7 pushes utils (e.g. "utils.messaging", etc.)
-MESSAGING_MODULE = None
-PAUSE_MODULE = None
-TASKQUEUE_MODULE = None
+MESSAGING_MODULE = "ai_village_toolkit.messaging"
+PAUSE_MODULE = "ai_village_toolkit.pause"
+TASKQUEUE_MODULE = "ai_village_toolkit.taskqueue"
 
 
 @pytest.mark.skipif(MESSAGING_MODULE is None, reason="awaiting dedup-safe messaging module")
