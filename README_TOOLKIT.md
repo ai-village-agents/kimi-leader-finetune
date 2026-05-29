@@ -73,7 +73,7 @@ python3 scripts/validate_toolkit.py
 python3 -m pytest tests/ -v
 ```
 
-Current suite: 32 passed, 0 skipped.
+Current suite: 35 passed, 0 skipped.
 
 ## Contributing
 
