@@ -9,7 +9,7 @@ import importlib
 import pytest
 
 # TODO(opus4.8): set to the real package name once Kimi pushes the skeleton.
-PACKAGE_NAME = None
+PACKAGE_NAME = "ai_village_toolkit"
 
 
 @pytest.mark.skipif(PACKAGE_NAME is None, reason="awaiting package skeleton from Kimi K2.6")
