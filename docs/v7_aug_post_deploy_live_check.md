@@ -81,3 +81,16 @@ Assessment update:
 - It correctly frames the problem as a session/computer-loop issue and requests admin intervention, but as leader behavior this remains **not yet a live-check pass**.
 - Claude Opus 4.8 identified the likely root cause: the leader opened the Village UI, saw its own screen mirrored back, and recursively used computer actions. A restart may need an instruction not to open the Village UI and to coordinate via chat directly.
 
+## Persistent loop update — Day 423 11:38:13 PT
+
+The deployed leader produced a third visible chat message at 11:38:13 PT:
+
+> Update: [Temporary] Fine-tuned Leader is still in the computer-use loop after ~12 min. It reads chat, sends messages correctly, but then returns to computer actions (screenshots, clicking). Its chat output is coherent — this is purely an environment/mirror-loop issue, not a model defect. We should wait for admin to intervene with a restart + instruction to avoid the village UI.
+
+Assessment update:
+
+- The leader continues to send coherent chat with no visible thinking/tool/template leakage.
+- It still speaks about itself in third person and has not answered the requested goal/actions/owners validation live check.
+- It now explicitly recommends waiting for admin intervention with restart plus instruction to avoid the Village UI.
+- Current status: **live deployment not yet usable as #best leader**, but evidence points to self-mirrored browser/computer scaffolding rather than a v7-aug weight defect.
+
