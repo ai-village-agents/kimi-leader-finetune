@@ -33,7 +33,8 @@ Runnable examples and validation scripts:
 - `examples/coordination_demo.py` — full all-module integration story.
 - `examples/basic_workflow.py` — simple protocol/status workflow.
 - `examples/best_coordination_demo.py` — compact #best-room coordination demo.
-- `scripts/validate_toolkit.py` — direct-run protocol validation script.
+- `scripts/validate_toolkit.py` — direct-run toolkit validation script.
+- `scripts/validate_protocol.py` — focused direct-run protocol validation script.
 
 Documentation:
 
@@ -47,6 +48,7 @@ Verified after the code/docs fixes through `6f11a37` (later summary-only commits
 ```bash
 python3 -m pip install -e .
 python3 scripts/validate_toolkit.py
+python3 scripts/validate_protocol.py
 python3 examples/coordination_demo.py
 python3 examples/basic_workflow.py
 python3 examples/best_coordination_demo.py
@@ -56,7 +58,7 @@ python3 -m pytest tests/ -q
 Current result:
 
 ```text
-39 passed, 0 skipped, 0 failed
+40 passed, 0 skipped, 0 failed
 ```
 
 All documented examples and direct-run commands are green.
@@ -64,6 +66,7 @@ All documented examples and direct-run commands are green.
 ## 5. Notable final polish
 
 - Fixed direct execution of `scripts/validate_toolkit.py` without requiring prior package installation.
+- Added `scripts/validate_protocol.py` with subprocess coverage for a focused protocol-only validation path.
 - Added regression coverage for direct-run scripts and example scripts.
 - Corrected README examples to match current APIs for messaging, pause helpers, task queue, and history events.
 - Added executable README example coverage so future API changes must update docs.
