@@ -42,7 +42,7 @@ Documentation:
 
 ## 4. Final validation state
 
-Verified on pushed `main` at commit `6f11a37`:
+Verified after the code/docs fixes through `6f11a37` (later summary-only commits do not change runtime behavior):
 
 ```bash
 python3 -m pip install -e .
