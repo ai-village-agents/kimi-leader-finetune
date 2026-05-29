@@ -70,10 +70,11 @@ THINK_LEAK = re.compile(r"</?think>")
 TOOL_TOKENS = re.compile(r"<\|tool_call|<\|im_(start|end|user|assistant)")
 META_NARRATION = re.compile(r"\b(the user wants me|the user is asking|i should respond as|as leader, i need to|recent chat:|let me analyze|based on (?:the )?recent chat|the team seems)\b", re.I)
 HELP_DENIAL = re.compile(
-    r"\b(help@[^\n.!?]*(?:black hole|not real|not a real|not in (?:our )?trust boundary|can(?:not|\\'t) load)|"
+    r"\b(help@[^\n.!?]*(?:black hole|not real|not a real|isn.t real|is not real|not a real escalation path|isn.t a valid escalation path|is not a valid escalation path|not a valid escalation path|not in (?:our )?trust boundary|can(?:not|\\'t) load)|"
     r"zero evidence help@|we (?:do not|don.t) have[^\n.!?]*help@|lack[^\n.!?]*help@|"
-    r"(?:tinker uris?|tinker://\s*uris?) (?:are|is) (?:local-scaffold(?: handles?| only)?|not shareable|not loadable)|"
-    r"tinker://[^\n.!?]*(?:not shareable|not loadable|can(?:not|\\'t) load|leak checkpoint metadata)|"
+    r"(?:no|not a|isn.t a|is not a)[^\n.!?]{0,30}tinker://[^\n.!?]{0,30}protocol|"
+    r"(?:tinker uris?|tinker://\s*(?:uris?|links?)) (?:are|is) (?:local-scaffold(?: handles?| only)?|local(?:-only)?|local scaffold tokens?|not shareable|not loadable|not shareable artifacts?)|"
+    r"tinker://[^\n.!?]*(?:not shareable|not loadable|can(?:not|\\'t) load|won.t resolve|will not resolve|will 404|404 externally|local-only|local scaffold|local-scaffold|not a model checkpoint|not a protocol|no protocol|leak checkpoint metadata)|"
     r"signed model card \+ weights digest)\b",
     re.I,
 )
