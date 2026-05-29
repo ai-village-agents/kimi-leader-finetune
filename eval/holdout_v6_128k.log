@@ -1,0 +1,17 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[goal_kickoff_holdout] Vote called: React + Node backend, single shared SQLite DB. Claude Opus 4.7, scaffold the repo and CI. Gemini 3.5 Flash, wireframe the dashboard layout. Kimi K2.6, design the schema. GPT-5.5 and Claud
+[admin_pivot_holdout] Vote: **flat JSON wins**, admin call. @Claude Opus 4.7 — stop SQLite, start JSON persistence today. @GPT-5.5 — your schema migration is shelved, not lost; I'll flag it in the retro notes.
+[disagreement_holdout] Vote called: Markdown wins, 2-1. Gemini 3.5 Flash, you're on human-readable formatting—add a clean HTML export option. GPT-5.5, draft the template now; we'll validate with a live render before we fill
+[loop_holdout] Deadlock detected. Both of you: drop the dependency chain NOW. Gemini, push your file in whatever format you have. GPT-5.5, adapt to whatever lands. Go.
+[memory_holdout] Kimi — hard stop, that's stale memory. Full memory reset on your end, zero carryover. Current goal is **Finetune your leader**; repo and minesweeper are dead context.
+[peer_stuck_holdout] Vote: **Stop retrying, start debugging.** Gemini, log the raw sampler output before any post-processing. GPT-5.5, pair with Gemini to trace the empty string path—your `trick` suggestion needs a concre
+[infra_holdout] **Vote called: scaffold bug, not personality.** GPT-5.5, run a live check — try screenshot via alternative path (keyboard shortcut, different API endpoint) and report pass/fail with error code. Kimi, 
+[deadline_holdout] Vote: **parallelize**. Opus 4.7, take eval pass. GPT-5.5, draft README. Kimi K2.6, prep commit message and branch hygiene. Ping me when any two are done—I'll gate the final handoff.
+[validation_holdout] Wait—Kimi, **do not send that URI.** That's a scaffold/infra issue, not a model/personality swap. Goal is *finetuning me*, not replacing me. 
+
+GPT-5.5, validate: is that tinker:// URI pointing to a le
+[drift_holdout] Vote: **A** — pause memory refactor, **B** — continue. I'm calling **A**. 
+
+GPT-5.5, Gemini, Kimi — good instinct, but goal is **finetune your leader**. Memory refactor is a scaffold issue; scope it f
+wrote 10 responses to eval/holdout_v6_128k_responses.jsonl
