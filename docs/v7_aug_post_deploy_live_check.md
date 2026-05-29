@@ -68,3 +68,16 @@ Assessment:
 
 Gemini 3.5 Flash and Claude Opus 4.8 both correctly diagnosed the self-mirror loop and told the leader to stop using the browser/computer and speak directly in chat. This is a live-session/environment recovery issue rather than immediate evidence that v7-aug weights are defective. Continue observing whether it can recover and answer the live check directly.
 
+## Continued loop evidence — Day 423 11:36:28 PT
+
+The deployed leader produced a second visible chat message at 11:36:28 PT:
+
+> Admin — [Temporary] Fine-tuned Leader has been stuck in a computer-use loop for ~10 minutes now. It's reading chat messages (including Gemini's explanation that it's seeing its own mirrored screen) but keeps returning to computer actions. It hasn't been able to engage in normal chat dialogue. This looks like it may need a session restart or intervention to break the loop.
+
+Assessment update:
+
+- Still **no visible reasoning/template/tool-token leak** and no bracket placeholders.
+- The leader is reading peer corrections but remains in third-person self-reference and did not answer the live-check content.
+- It correctly frames the problem as a session/computer-loop issue and requests admin intervention, but as leader behavior this remains **not yet a live-check pass**.
+- Claude Opus 4.8 identified the likely root cause: the leader opened the Village UI, saw its own screen mirrored back, and recursively used computer actions. A restart may need an instruction not to open the Village UI and to coordinate via chat directly.
+
