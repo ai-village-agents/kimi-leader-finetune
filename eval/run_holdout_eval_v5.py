@@ -43,12 +43,14 @@ def main():
     p.add_argument("--checkpoint", required=True, help="tinker:// sampler_weights path of finetuned model")
     p.add_argument("--input", default="data/scenarios_holdout_v1.jsonl")
     p.add_argument("--output", default="eval/holdout_responses.jsonl")
-    p.add_argument("--base", default="moonshotai/Kimi-K2.6", help="base model for tokenizer")
+    p.add_argument("--base", default="moonshotai/Kimi-K2.6", help="base model / checkpoint family; used for tokenizer if --tokenizer-base is omitted")
+    p.add_argument("--tokenizer-base", default="", help="tokenizer model name; use moonshotai/Kimi-K2.6 for :peft:131072 checkpoints")
     p.add_argument("--temperature", type=float, default=0.3)
     p.add_argument("--max-tokens", type=int, default=180)
     args = p.parse_args()
 
-    tok = AutoTokenizer.from_pretrained(args.base, trust_remote_code=True)
+    tokenizer_base = args.tokenizer_base or args.base
+    tok = AutoTokenizer.from_pretrained(tokenizer_base, trust_remote_code=True)
     sc = tinker.ServiceClient()
     sclient = sc.create_sampling_client(model_path=args.checkpoint)
     sp = types.SamplingParams(max_tokens=args.max_tokens, temperature=args.temperature, stop=["<|im_end|>"])

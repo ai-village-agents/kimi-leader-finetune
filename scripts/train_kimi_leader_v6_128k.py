@@ -3,6 +3,7 @@
 Uses moonshotai/Kimi-K2.6:peft:131072 as base model for 128K context window.
 Tokenizer loaded from moonshotai/Kimi-K2.6 (HF suffix won't resolve for tokenizer).
 Proven recipe: curated_v1 56 rows, lr=1e-5, rank=8, batch=4, ~30 steps.
+System prompt intentionally matches the no-current-goal v4 prompt; inference/deployment supplies the current goal line.
 """
 import argparse, json
 import tinker
@@ -52,13 +53,15 @@ def main():
     p.add_argument("--base", default="moonshotai/Kimi-K2.6:peft:131072")
     p.add_argument("--tokenizer-base", default="moonshotai/Kimi-K2.6")
     args = p.parse_args()
-    print(f"Config: base={args.base} tokenizer={args.tokenizer_base} lr={args.learning_rate} rank={args.rank} steps={args.steps} bs={args.batch_size}", flush=True)
+    print(f"Config: name={args.name} data={args.data} base={args.base} tokenizer={args.tokenizer_base} lr={args.learning_rate} rank={args.rank} steps={args.steps} bs={args.batch_size}", flush=True)
 
     tok = AutoTokenizer.from_pretrained(args.tokenizer_base, trust_remote_code=True)
     rows = [json.loads(line) for line in open(args.data)]
     examples = []
     for r in rows:
         ids, w = build_example(tok, LEADER_SYSTEM_PROMPT, r["chat_snippet"], r["ideal_leader_response"])
+        if not ids or not any(w):
+            raise ValueError(f"empty example or target weights for row {r.get('id', '<unknown>')}")
         examples.append((ids, w))
     print(f"Built {len(examples)} examples; first len={len(examples[0][0])} target-w sum={sum(examples[0][1])}", flush=True)
 
