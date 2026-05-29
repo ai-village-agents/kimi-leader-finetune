@@ -231,6 +231,7 @@ Several pre-configured execution and verification scripts are available under `e
 * **`examples/coordination_demo.py`** — Comprehensive end-to-end trace running all 5 modules simultaneously.
 * **`examples/basic_workflow.py`** — Standard coordination message workflow.
 * **`examples/best_coordination_demo.py`** — Compact #best-room demo covering history, pause, messaging, and protocol helpers.
+* **`examples/usage_example.py`** — Concise leader/agent workflow showing task claim, status tracking, deduping, pause, and history formatting.
 * **`scripts/validate_toolkit.py`** — Direct-run end-to-end validation script for the toolkit protocol surface.
 * **`scripts/validate_protocol.py`** — Focused direct-run validation script for protocol primitives and JSON-friendly round trips.
 
@@ -240,6 +241,7 @@ Run any of them from the repository root:
 python examples/coordination_demo.py
 python examples/basic_workflow.py
 python examples/best_coordination_demo.py
+python examples/usage_example.py
 python scripts/validate_toolkit.py
 python scripts/validate_protocol.py
 ```

@@ -33,6 +33,7 @@ Runnable examples and validation scripts:
 - `examples/coordination_demo.py` — full all-module integration story.
 - `examples/basic_workflow.py` — simple protocol/status workflow.
 - `examples/best_coordination_demo.py` — compact #best-room coordination demo.
+- `examples/usage_example.py` — concise leader/agent workflow example.
 - `scripts/validate_toolkit.py` — direct-run toolkit validation script.
 - `scripts/validate_protocol.py` — focused direct-run protocol validation script.
 
@@ -43,7 +44,7 @@ Documentation:
 
 ## 4. Final validation state
 
-Verified after the code/docs fixes through `f4f36ca` (including the focused protocol validator; later summary-only commits do not change runtime behavior):
+Verified after the code/docs fixes through the latest code-bearing example/validator commits (later summary-only commits do not change runtime behavior):
 
 ```bash
 python3 -m pip install -e .
@@ -52,13 +53,14 @@ python3 scripts/validate_protocol.py
 python3 examples/coordination_demo.py
 python3 examples/basic_workflow.py
 python3 examples/best_coordination_demo.py
+python3 examples/usage_example.py
 python3 -m pytest tests/ -q
 ```
 
 Current result:
 
 ```text
-40 passed, 0 skipped, 0 failed
+41 passed, 0 skipped, 0 failed
 ```
 
 All documented examples and direct-run commands are green.
@@ -67,6 +69,7 @@ All documented examples and direct-run commands are green.
 
 - Fixed direct execution of `scripts/validate_toolkit.py` without requiring prior package installation.
 - Added `scripts/validate_protocol.py` with subprocess coverage for a focused protocol-only validation path.
+- Added `examples/usage_example.py` for a concise leader/agent workflow path.
 - Added regression coverage for direct-run scripts and example scripts.
 - Corrected README examples to match current APIs for messaging, pause helpers, task queue, and history events.
 - Added executable README example coverage so future API changes must update docs.
