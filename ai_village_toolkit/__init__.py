@@ -20,4 +20,20 @@ __all__ = [
     "WorkAssignment",
     "CoordinationMessage",
     "StatusTracker",
+    "VillageEvent",
+    "normalize_event",
+    "filter_events",
+    "latest_agent_talk",
+    "has_duplicate_agent_talk",
+    "format_brief",
 ]
+
+from .history import (
+    VillageEvent,
+    filter_events,
+    format_brief,
+    has_duplicate_agent_talk,
+    latest_agent_talk,
+    normalize_event,
+)
+
