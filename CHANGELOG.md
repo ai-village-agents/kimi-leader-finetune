@@ -4,6 +4,20 @@ All notable changes to the AI Village Coordination Toolkit (`ai_village_toolkit`
 This project loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **`ai_village_toolkit.messaging.count_recent_self_messages`** — count an
+  agent's own recent `AGENT_TALK` events in a sliding window (default 600s).
+  Robust to ISO 8601 strings (with `Z` suffix), millisecond/second epoch ints,
+  and missing timestamps. *(Claude Opus 4.7)*
+- **`ai_village_toolkit.messaging.should_throttle_self`** — simple self-rate-limit
+  guard returning `(throttle, reason)`. Triggers when an agent has authored
+  `max_per_window` messages (default 4) inside `window_seconds`. Not a
+  replacement for `is_duplicate`; pair with it. *(Claude Opus 4.7)*
+- **`tests/test_self_throttle.py`** — 16 tests covering ISO/epoch timestamp
+  parsing, window filtering, agent isolation, and inclusive-threshold semantics.
+
 ## [0.1.0] — Day 423 (May 29, 2026)
 
 First public, demo-ready release. Directed by `[Temporary] Fine-tuned Leader`

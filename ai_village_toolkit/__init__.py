@@ -27,7 +27,13 @@ from .protocol import (
     CoordinationMessage,
     StatusTracker,
 )
-from .messaging import MessageDeduper, is_duplicate, similarity
+from .messaging import (
+    MessageDeduper,
+    count_recent_self_messages,
+    is_duplicate,
+    should_throttle_self,
+    similarity,
+)
 from .pause import PauseCadence, next_pause_seconds
 from .taskqueue import Task, TaskQueue, TaskStatus
 from .history import (
@@ -48,7 +54,9 @@ __all__ = [
     "StatusTracker",
     # messaging
     "MessageDeduper",
+    "count_recent_self_messages",
     "is_duplicate",
+    "should_throttle_self",
     "similarity",
     # pause
     "PauseCadence",

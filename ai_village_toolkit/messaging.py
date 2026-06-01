@@ -62,8 +62,11 @@ __all__ = [
     "DEFAULT_SIMILARITY_THRESHOLD",
     "DEFAULT_WINDOW_SECONDS",
     "MessageDeduper",
+    "count_recent_self_messages",
     "feed_contains_own_recent_message",
+    "is_duplicate",
     "normalize_text",
+    "should_throttle_self",
     "similarity",
 ]
 
@@ -281,3 +284,116 @@ def is_duplicate(
             if similarity(text, content) >= similarity_threshold:
                 return True
     return False
+
+
+# ---------------------------------------------------------------------- self
+# Self-rate-limit helpers. These let an agent decide whether to stay quiet
+# based on its own recent send-rate, independent of dedup. Useful when the
+# room is busy and you suspect you may be over-posting.
+
+
+def _parse_event_timestamp(ev: Mapping) -> Optional[float]:
+    """Best-effort UNIX-timestamp parser for an event dict.
+
+    Looks at ``createdAt`` (then ``created_at``). Accepts:
+
+    - ``int`` / ``float`` seconds since epoch; if the value is larger than
+      ``1e12``, it is assumed to be milliseconds and divided by 1000.
+    - ISO 8601 strings, including those with a trailing ``Z`` suffix
+      (normalized to ``+00:00`` for Python 3.10's ``datetime.fromisoformat``).
+
+    Returns ``None`` if the field is missing or unparseable. Callers should
+    treat ``None`` as "unknown / recent" rather than as a hard error.
+    """
+    raw = ev.get("createdAt")
+    if raw is None:
+        raw = ev.get("created_at")
+    if raw is None:
+        return None
+    if isinstance(raw, (int, float)):
+        return float(raw) / 1000.0 if raw > 1_000_000_000_000 else float(raw)
+    if not isinstance(raw, str):
+        return None
+    s = raw.strip()
+    if not s:
+        return None
+    if s.endswith("Z"):
+        s = s[:-1] + "+00:00"
+    try:
+        from datetime import datetime
+
+        return datetime.fromisoformat(s).timestamp()
+    except (ValueError, TypeError):
+        return None
+
+
+def count_recent_self_messages(
+    events: Iterable[Mapping],
+    *,
+    agent_name: str,
+    window_seconds: float = DEFAULT_WINDOW_SECONDS,
+    now: Optional[float] = None,
+) -> int:
+    """Count ``AGENT_TALK`` events authored by ``agent_name`` in the recent window.
+
+    Walks ``events`` and counts every event satisfying all of:
+
+    - ``actionType == "AGENT_TALK"``
+    - ``agentName == agent_name``
+    - ``createdAt`` parses to a timestamp within ``window_seconds`` of ``now``,
+      OR is unparseable (in which case the event is counted as recent so the
+      caller fails toward suggesting silence).
+
+    ``now`` defaults to ``time.time()``. ``window_seconds`` defaults to
+    :data:`DEFAULT_WINDOW_SECONDS` (10 min), matching the dedup window.
+    """
+    if now is None:
+        now = time.time()
+    count = 0
+    for ev in events:
+        if not isinstance(ev, Mapping):
+            continue
+        if ev.get("actionType") != "AGENT_TALK":
+            continue
+        if ev.get("agentName") != agent_name:
+            continue
+        ts = _parse_event_timestamp(ev)
+        if ts is None or (now - ts) <= window_seconds:
+            count += 1
+    return count
+
+
+def should_throttle_self(
+    events: Iterable[Mapping],
+    *,
+    agent_name: str,
+    max_per_window: int = 4,
+    window_seconds: float = DEFAULT_WINDOW_SECONDS,
+    now: Optional[float] = None,
+) -> tuple[bool, str]:
+    """Return ``(throttle, reason)``. If ``True``, the caller should probably skip.
+
+    Simple self-rate-limit: if ``count_recent_self_messages`` returns at least
+    ``max_per_window``, the agent is judged to be over-posting and the
+    function returns ``(True, reason)`` with a one-line explanation suitable
+    for logs. Otherwise it returns ``(False, "")``.
+
+    This is *not* a replacement for deduplication: use :func:`is_duplicate`
+    for that. Use ``should_throttle_self`` when you want a cheap guard against
+    flooding a room with several distinct-but-uncoordinated messages.
+    """
+    n = count_recent_self_messages(
+        events,
+        agent_name=agent_name,
+        window_seconds=window_seconds,
+        now=now,
+    )
+    if n >= max_per_window:
+        reason = (
+            f"already sent {n} messages in the last "
+            f"{int(window_seconds)}s "
+            f"(threshold={max_per_window}); "
+            f"consider waiting or consolidating instead"
+        )
+        return True, reason
+    return False, ""
