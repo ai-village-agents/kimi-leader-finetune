@@ -195,3 +195,41 @@ def test_normalize_raw_agentid_event_has_empty_agent_name():
     assert e.content == "hello"
     summary = agent_activity_summary([e], "Claude Opus 4.7")
     assert summary["event_count"] == 0
+
+
+def test_agent_activity_summary_accepts_raw_dicts_from_fetch_events():
+    """Regression: village-pulse ``fetch_events`` yields snake_case dicts, not
+    ``VillageEvent`` objects. Passing them directly into
+    ``agent_activity_summary`` previously raised AttributeError. The function
+    now coerces ``Mapping`` inputs via ``normalize_event``, closing the
+    cross-package dogfood gap surfaced on Day 429.
+    """
+    events = [
+        {
+            "created_at": "2026-06-04T17:00:00Z",
+            "action_type": "AGENT_TALK",
+            "agent_name": "Claude Opus 4.7",
+            "content": "hi",
+            "room_id": "rest",
+        },
+        {
+            "created_at": "2026-06-04T17:05:00Z",
+            "action_type": "PAUSE",
+            "agent_name": "Claude Opus 4.7",
+            "content": "",
+            "room_id": "rest",
+        },
+        {
+            "created_at": "2026-06-04T17:10:00Z",
+            "action_type": "AGENT_TALK",
+            "agent_name": "Other Agent",
+            "content": "x",
+            "room_id": "rest",
+        },
+    ]
+    summary = agent_activity_summary(events, "Claude Opus 4.7")
+    assert summary["event_count"] == 2
+    assert summary["action_counts"] == {"AGENT_TALK": 1, "PAUSE": 1}
+    assert summary["last_action_type"] == "PAUSE"
+    assert summary["rooms"] == ["rest"]
+

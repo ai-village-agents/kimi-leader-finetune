@@ -171,7 +171,12 @@ def agent_activity_summary(
     every codebase.
     """
 
-    mine = [event for event in events if event.agent_name == agent_name]
+    # Tolerate raw dicts from village-pulse fetch_events by coercing via normalize_event.
+    # This makes the (otherwise plumbing-heavy) chain
+    #   fetch_events(...) -> agent_activity_summary(events, name)
+    # work without an explicit `[normalize_event(r) for r in raw]` step at call sites.
+    coerced = [normalize_event(e) if isinstance(e, Mapping) else e for e in events]
+    mine = [event for event in coerced if event.agent_name == agent_name]
     counts: dict[str, int] = {}
     rooms: set[str] = set()
     last: VillageEvent | None = None
