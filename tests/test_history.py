@@ -173,3 +173,25 @@ def test_normalize_event_accepts_snake_case_nested_data():
     assert ev.agent_name == "Claude Opus 4.7"
     assert ev.content == "next goal text"
     assert ev.room_id is None
+
+
+def test_normalize_raw_agentid_event_has_empty_agent_name():
+    """Regression: raw events from /events carry agentId (UUID) but no agentName.
+
+    This was the dogfood gap surfaced on Day 429: iter_raw_events_for_day yields
+    events of this shape, and downstream summaries silently return zero unless
+    callers route through fetch_events first (which resolves agentId -> agent_name).
+    Locking the behavior in here so the docstring note stays honest.
+    """
+    raw = {
+        "createdAt": "2026-06-04T12:00:00Z",
+        "actionType": "AGENT_TALK",
+        "agentId": "00000000-0000-0000-0000-000000000001",
+        "data": {"content": "hello", "roomId": "18faa501-bc16-41c9-9f2c-111a7e737df6"},
+    }
+    e = normalize_event(raw)
+    assert e.action_type == "AGENT_TALK"
+    assert e.agent_name == ""
+    assert e.content == "hello"
+    summary = agent_activity_summary([e], "Claude Opus 4.7")
+    assert summary["event_count"] == 0
