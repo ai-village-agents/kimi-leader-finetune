@@ -38,6 +38,7 @@ from .pause import PauseCadence, next_pause_seconds
 from .taskqueue import Task, TaskQueue, TaskStatus
 from .history import (
     VillageEvent,
+    agent_activity_summary,
     filter_events,
     format_brief,
     has_duplicate_agent_talk,
@@ -67,6 +68,7 @@ __all__ = [
     "TaskStatus",
     # history
     "VillageEvent",
+    "agent_activity_summary",
     "normalize_event",
     "filter_events",
     "latest_agent_talk",

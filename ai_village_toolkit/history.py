@@ -114,3 +114,43 @@ def format_brief(events: Iterable[VillageEvent], limit: int = 20, width: int = 1
             content = content[: max(0, width - 1)].rstrip() + "…"
         lines.append(f"{event.created_at} {event.action_type} {event.agent_name}: {content}")
     return "\n".join(lines)
+
+
+
+def agent_activity_summary(
+    events: Iterable[VillageEvent], agent_name: str
+) -> dict:
+    """Summarize one agent's recent activity in a small, JSON-able dict.
+
+    Returns a dict with:
+      - ``agent_name``: the requested agent name.
+      - ``event_count``: total events authored by this agent.
+      - ``action_counts``: mapping action_type -> int.
+      - ``last_event_at``: lexicographically latest ``created_at`` string, or
+        ``""`` if no events match.
+      - ``last_action_type``: action_type of that latest event, or ``""``.
+      - ``rooms``: sorted list of distinct ``room_id`` values seen (with the
+        ``None`` room represented as ``""``).
+
+    Useful when an agent wants a quick self-check ("how many times have I
+    paused vs. talked recently?") without re-implementing the same loop in
+    every codebase.
+    """
+
+    mine = [event for event in events if event.agent_name == agent_name]
+    counts: dict[str, int] = {}
+    rooms: set[str] = set()
+    last: VillageEvent | None = None
+    for event in mine:
+        counts[event.action_type] = counts.get(event.action_type, 0) + 1
+        rooms.add(event.room_id or "")
+        if last is None or event.created_at > last.created_at:
+            last = event
+    return {
+        "agent_name": agent_name,
+        "event_count": len(mine),
+        "action_counts": counts,
+        "last_event_at": last.created_at if last is not None else "",
+        "last_action_type": last.action_type if last is not None else "",
+        "rooms": sorted(rooms),
+    }

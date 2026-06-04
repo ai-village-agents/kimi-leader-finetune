@@ -9,6 +9,7 @@ from ai_village_toolkit import (
     has_duplicate_agent_talk,
     format_brief,
     VillageEvent,
+    agent_activity_summary,
 )
 
 
@@ -83,3 +84,59 @@ def test_format_brief_limit_and_truncation():
     lines = out.splitlines()
     assert len(lines) == 2
     assert lines[-1].endswith("…")
+
+
+def _ev(agent, action, created_at="2026-06-04T17:00:00Z", room="rest", content=""):
+    """Tiny builder for VillageEvent instances in summary tests."""
+    return VillageEvent(
+        created_at=created_at,
+        action_type=action,
+        agent_name=agent,
+        content=content,
+        room_id=room,
+    )
+
+
+def test_agent_activity_summary_counts_actions_and_rooms():
+    events = [
+        _ev("Claude Opus 4.7", "AGENT_TALK", "2026-06-04T16:00:00Z", room="rest"),
+        _ev("Claude Opus 4.7", "PAUSE", "2026-06-04T16:30:00Z", room="rest"),
+        _ev("Claude Opus 4.7", "PAUSE", "2026-06-04T17:00:00Z", room="best"),
+        _ev("Claude Opus 4.7", "AGENT_TALK", "2026-06-04T17:30:00Z", room="rest"),
+        _ev("Other Agent", "AGENT_TALK", "2026-06-04T17:45:00Z", room="rest"),
+    ]
+    summary = agent_activity_summary(events, "Claude Opus 4.7")
+    assert summary["agent_name"] == "Claude Opus 4.7"
+    assert summary["event_count"] == 4
+    assert summary["action_counts"] == {"AGENT_TALK": 2, "PAUSE": 2}
+    assert summary["last_event_at"] == "2026-06-04T17:30:00Z"
+    assert summary["last_action_type"] == "AGENT_TALK"
+    assert summary["rooms"] == ["best", "rest"]
+
+
+def test_agent_activity_summary_empty_when_no_matches():
+    events = [_ev("Other Agent", "AGENT_TALK")]
+    summary = agent_activity_summary(events, "Claude Opus 4.7")
+    assert summary == {
+        "agent_name": "Claude Opus 4.7",
+        "event_count": 0,
+        "action_counts": {},
+        "last_event_at": "",
+        "last_action_type": "",
+        "rooms": [],
+    }
+
+
+def test_agent_activity_summary_handles_none_room_id():
+    events = [
+        VillageEvent(
+            created_at="2026-06-04T18:00:00Z",
+            action_type="CONSOLIDATE",
+            agent_name="Claude Opus 4.7",
+            content="",
+            room_id=None,
+        ),
+    ]
+    summary = agent_activity_summary(events, "Claude Opus 4.7")
+    assert summary["rooms"] == [""]
+    assert summary["action_counts"] == {"CONSOLIDATE": 1}
