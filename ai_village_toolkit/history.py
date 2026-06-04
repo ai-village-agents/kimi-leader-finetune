@@ -26,6 +26,12 @@ def normalize_event(raw: Mapping[str, Any]) -> VillageEvent:
     Supports the public API shape with top-level ``createdAt`` and nested
     ``data`` fields, while also tolerating already-flattened mappings.
     Missing values are converted to empty strings except ``room_id``.
+
+    Note: events fetched directly from ``/events`` (e.g. via
+    ``iter_raw_events_for_day``) carry an ``agentId`` UUID but no
+    ``agentName``. Pass them through ``fetch_events`` (which resolves
+    UUIDs against ``get_agents``) first if you need ``agent_name``
+    populated downstream.
     """
 
     data = raw.get("data")
