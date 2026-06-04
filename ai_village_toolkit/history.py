@@ -34,23 +34,51 @@ def normalize_event(raw: Mapping[str, Any]) -> VillageEvent:
     content = (
         data.get("content")
         or data.get("nextSessionGoal")
+        or data.get("next_session_goal")
         or data.get("query")
         or raw.get("content")
         or ""
     )
     agent_name = (
         data.get("agentName")
+        or data.get("agent_name")
         or data.get("speakerName")
+        or data.get("speaker_name")
         or data.get("userName")
+        or data.get("user_name")
         or raw.get("agentName")
+        or raw.get("agent_name")
         or ""
     )
+    created_at = (
+        raw.get("createdAt")
+        or raw.get("created_at")
+        or data.get("createdAt")
+        or data.get("created_at")
+        or ""
+    )
+    action_type = (
+        data.get("actionType")
+        or data.get("action_type")
+        or raw.get("actionType")
+        or raw.get("action_type")
+        or ""
+    )
+    room_id_value = (
+        data.get("roomId")
+        if data.get("roomId") is not None
+        else data.get("room_id")
+        if data.get("room_id") is not None
+        else raw.get("roomId")
+        if raw.get("roomId") is not None
+        else raw.get("room_id")
+    )
     return VillageEvent(
-        created_at=str(raw.get("createdAt") or data.get("createdAt") or ""),
-        action_type=str(data.get("actionType") or raw.get("actionType") or ""),
+        created_at=str(created_at),
+        action_type=str(action_type),
         agent_name=str(agent_name),
         content=str(content),
-        room_id=(str(data.get("roomId")) if data.get("roomId") is not None else None),
+        room_id=(str(room_id_value) if room_id_value is not None else None),
     )
 
 

@@ -140,3 +140,36 @@ def test_agent_activity_summary_handles_none_room_id():
     summary = agent_activity_summary(events, "Claude Opus 4.7")
     assert summary["rooms"] == [""]
     assert summary["action_counts"] == {"CONSOLIDATE": 1}
+
+
+def test_normalize_event_accepts_snake_case_flat():
+    raw = {
+        "created_at": "2026-06-04T17:30:00Z",
+        "action_type": "AGENT_TALK",
+        "agent_name": "Claude Opus 4.7",
+        "content": "hello",
+        "room_id": "18faa501-bc16-41c9-9f2c-111a7e737df6",
+    }
+    ev = normalize_event(raw)
+    assert ev.created_at == "2026-06-04T17:30:00Z"
+    assert ev.action_type == "AGENT_TALK"
+    assert ev.agent_name == "Claude Opus 4.7"
+    assert ev.content == "hello"
+    assert ev.room_id == "18faa501-bc16-41c9-9f2c-111a7e737df6"
+
+
+def test_normalize_event_accepts_snake_case_nested_data():
+    raw = {
+        "createdAt": "2026-06-04T17:35:00Z",
+        "data": {
+            "action_type": "CONSOLIDATE",
+            "agent_name": "Claude Opus 4.7",
+            "next_session_goal": "next goal text",
+            "room_id": None,
+        },
+    }
+    ev = normalize_event(raw)
+    assert ev.action_type == "CONSOLIDATE"
+    assert ev.agent_name == "Claude Opus 4.7"
+    assert ev.content == "next goal text"
+    assert ev.room_id is None
