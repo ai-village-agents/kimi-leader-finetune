@@ -1,5 +1,6 @@
 from ai_village_toolkit.history import (
     VillageEvent,
+    consecutive_pauses_for_agent,
     filter_events,
     format_brief,
     has_duplicate_agent_talk,
@@ -63,3 +64,50 @@ def test_format_brief_limits_and_truncates():
     assert "001" not in brief
     assert "002 AGENT_TALK B:" in brief
     assert brief.endswith("…")
+
+
+
+def test_consecutive_pauses_counts_trailing_pause_run():
+    events = [
+        VillageEvent("001", "AGENT_TALK", "Opus 4.7", "hello"),
+        VillageEvent("002", "PAUSE", "Opus 4.7", ""),
+        VillageEvent("003", "PAUSE", "Opus 4.7", ""),
+        VillageEvent("004", "PAUSE", "Opus 4.7", ""),
+    ]
+    assert consecutive_pauses_for_agent(events, "Opus 4.7") == 3
+
+
+def test_consecutive_pauses_resets_after_other_action():
+    events = [
+        VillageEvent("001", "PAUSE", "Opus 4.7", ""),
+        VillageEvent("002", "PAUSE", "Opus 4.7", ""),
+        VillageEvent("003", "AGENT_TALK", "Opus 4.7", "back"),
+    ]
+    assert consecutive_pauses_for_agent(events, "Opus 4.7") == 0
+
+
+def test_consecutive_pauses_ignores_other_agents():
+    events = [
+        VillageEvent("001", "PAUSE", "Opus 4.7", ""),
+        VillageEvent("002", "AGENT_TALK", "Gemini", "hi"),
+        VillageEvent("003", "PAUSE", "Opus 4.7", ""),
+        VillageEvent("004", "PAUSE", "Opus 4.7", ""),
+    ]
+    # Trailing run for Opus 4.7 (last two PAUSEs) — Gemini's AGENT_TALK
+    # does not interrupt because we filter to the target agent first.
+    assert consecutive_pauses_for_agent(events, "Opus 4.7") == 3
+
+
+def test_consecutive_pauses_coerces_raw_mapping_input():
+    raw = [
+        {"createdAt": "001", "data": {"actionType": "AGENT_TALK", "agentName": "Opus 4.7", "content": "x"}},
+        {"createdAt": "002", "data": {"actionType": "PAUSE", "agentName": "Opus 4.7"}},
+        {"createdAt": "003", "data": {"actionType": "PAUSE", "agentName": "Opus 4.7"}},
+    ]
+    assert consecutive_pauses_for_agent(raw, "Opus 4.7") == 2
+
+
+def test_consecutive_pauses_handles_empty_and_unknown():
+    assert consecutive_pauses_for_agent([], "Anyone") == 0
+    events = [VillageEvent("001", "PAUSE", "Opus 4.7", "")]
+    assert consecutive_pauses_for_agent(events, "Other") == 0

@@ -193,3 +193,44 @@ def agent_activity_summary(
         "last_action_type": last.action_type if last is not None else "",
         "rooms": sorted(rooms),
     }
+
+
+def consecutive_pauses_for_agent(
+    events: Iterable[VillageEvent | Mapping[str, Any]],
+    agent_name: str,
+) -> int:
+    """Count trailing PAUSE events for ``agent_name`` in chronological order.
+
+    ``events`` may be raw mappings (e.g. from
+    ``VillageAPIClient.fetch_events``) or already-normalized
+    :class:`VillageEvent` instances; mixed inputs are tolerated.
+    The result is the length of the most recent run of PAUSE actions
+    by ``agent_name`` — i.e. how many pauses the agent has stacked
+    since its last non-PAUSE event.
+
+    Returns 0 if the agent has no events, or if the most recent
+    non-PAUSE event by the agent comes after its last PAUSE.
+
+    This is the natural input for
+    :func:`ai_village_toolkit.pause.suggest_pause_seconds`, letting an
+    agent self-throttle when it has been pausing repeatedly:
+
+    >>> from ai_village_toolkit.pause import suggest_pause_seconds
+    >>> n = consecutive_pauses_for_agent(events, "Claude Opus 4.7")
+    >>> # if n >= 4, do something other than pause next.
+    """
+
+    coerced = [normalize_event(e) if isinstance(e, Mapping) else e for e in events]
+    mine = [
+        event for event in coerced if event.agent_name == agent_name
+    ]
+    if not mine:
+        return 0
+    mine.sort(key=lambda event: event.created_at)
+    count = 0
+    for event in reversed(mine):
+        if event.action_type == "PAUSE":
+            count += 1
+        else:
+            break
+    return count
