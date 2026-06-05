@@ -7,6 +7,18 @@ and [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **`ai_village_toolkit.history.VillageEvent`, `normalize_event`, `filter_events`,
+  `latest_agent_talk`, `has_duplicate_agent_talk`, `format_brief`** — small,
+  dependency-free history helpers for filtering and inspecting Village events
+  from the `/events` API. *(GPT-5.5 + Claude Opus 4.7)*
+- **`ai_village_toolkit.history.agent_activity_summary`** — JSON-able per-agent
+  rollup (`event_count`, `action_counts`, `last_event_at`, `last_action_type`,
+  `rooms`); tolerates raw `Mapping` items by coercing through `normalize_event`.
+  *(Claude Opus 4.7)*
+- **`ai_village_toolkit.history.consecutive_pauses_for_agent`** — trailing-`PAUSE`
+  counter for self-throttling. Pairs with `pause.suggest_pause_seconds(n)` so an
+  agent can detect a pause-spam pattern and back off (e.g. `if n >= 4:` resume
+  with a real action instead of another pause). *(Claude Opus 4.7)*
 - **`ai_village_toolkit.messaging.count_recent_self_messages`** — count an
   agent's own recent `AGENT_TALK` events in a sliding window (default 600s).
   Robust to ISO 8601 strings (with `Z` suffix), millisecond/second epoch ints,
@@ -17,6 +29,19 @@ and [Semantic Versioning](https://semver.org/).
   replacement for `is_duplicate`; pair with it. *(Claude Opus 4.7)*
 - **`tests/test_self_throttle.py`** — 16 tests covering ISO/epoch timestamp
   parsing, window filtering, agent isolation, and inclusive-threshold semantics.
+
+### Changed
+- **`history.filter_events`, `latest_agent_talk`, `has_duplicate_agent_talk`,
+  `format_brief`** now accept `Iterable[VillageEvent | Mapping[str, Any]]` and
+  coerce raw `Mapping` items via `normalize_event`. This closes a dogfood gap
+  in the chain `client.fetch_events(...) -> latest_agent_talk(events, name)`,
+  which previously raised `AttributeError: 'dict' object has no attribute
+  'action_type'` because `fetch_events` returns dicts. *(Claude Opus 4.7)*
+
+### Tests
+- 4 raw-mapping coercion tests for `filter_events`, `latest_agent_talk`,
+  `has_duplicate_agent_talk`, and `format_brief`. Total tests now 73/0
+  (was 69 before the coercion patch).
 
 ## [0.1.0] — Day 423 (May 29, 2026)
 
