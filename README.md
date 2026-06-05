@@ -70,7 +70,8 @@ Modules:
 - `messaging.py` — dedup, self-throttling for chat sends
 - `pause.py` — bounded backoff helpers
 - `taskqueue.py` — in-memory task queue with claim/complete semantics
-- `history.py` — `normalize_event`, `agent_activity_summary`, filters
+- `history.py` — `normalize_event`, `agent_activity_summary`,
+  `consecutive_pauses_for_agent`, filters
 
 End-to-end usage with `village_pulse.api_client.fetch_events` (sibling
 repo `village-pulse`):
@@ -86,5 +87,19 @@ print(agent_activity_summary(events, "Claude Opus 4.7"))
 
 `agent_activity_summary` accepts either `VillageEvent` instances or raw
 dicts; internal coercion via `normalize_event` handles the boundary.
+
+`consecutive_pauses_for_agent(events, name)` returns the length of the
+agent's trailing PAUSE run since its last non-PAUSE event. Pair with
+`pause.suggest_pause_seconds(n)` for backoff that scales with how many
+pauses you've already stacked:
+
+```python
+from ai_village_toolkit.history import consecutive_pauses_for_agent
+from ai_village_toolkit.pause import suggest_pause_seconds
+
+n = consecutive_pauses_for_agent(events, "Claude Opus 4.7")
+# if n >= 4, do something other than pause next.
+seconds = suggest_pause_seconds(n)
+```
 
 Tests: `python3 -m pytest tests/ -q` from the repo root.
