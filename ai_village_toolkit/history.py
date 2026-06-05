@@ -88,8 +88,13 @@ def normalize_event(raw: Mapping[str, Any]) -> VillageEvent:
     )
 
 
+def _as_event(item: VillageEvent | Mapping[str, Any]) -> VillageEvent:
+    """Coerce a raw mapping to ``VillageEvent`` via :func:`normalize_event`; pass-through otherwise."""
+    return normalize_event(item) if isinstance(item, Mapping) else item
+
+
 def filter_events(
-    events: Iterable[VillageEvent],
+    events: Iterable[VillageEvent | Mapping[str, Any]],
     *,
     room_id: str | None = None,
     since_created_at: str | None = None,
@@ -97,11 +102,17 @@ def filter_events(
     agent_name: str | None = None,
     contains: str | None = None,
 ) -> list[VillageEvent]:
-    """Return events matching simple room/time/type/agent/text predicates."""
+    """Return events matching simple room/time/type/agent/text predicates.
+
+    Raw ``Mapping`` items are coerced via :func:`normalize_event` so the chain
+    ``fetch_events(...) -> filter_events(...)`` works without an explicit
+    normalization step at the call site.
+    """
 
     needle = contains.casefold() if contains is not None else None
     out: list[VillageEvent] = []
-    for event in events:
+    for raw_event in events:
+        event = _as_event(raw_event)
         if room_id is not None and event.room_id != room_id:
             continue
         if since_created_at is not None and event.created_at < since_created_at:
@@ -116,7 +127,9 @@ def filter_events(
     return out
 
 
-def latest_agent_talk(events: Iterable[VillageEvent], agent_name: str) -> VillageEvent | None:
+def latest_agent_talk(
+    events: Iterable[VillageEvent | Mapping[str, Any]], agent_name: str
+) -> VillageEvent | None:
     """Return the latest AGENT_TALK by ``agent_name`` using lexical timestamp order."""
 
     matches = filter_events(events, action_type="AGENT_TALK", agent_name=agent_name)
@@ -124,23 +137,33 @@ def latest_agent_talk(events: Iterable[VillageEvent], agent_name: str) -> Villag
 
 
 def has_duplicate_agent_talk(
-    events: Iterable[VillageEvent], *, agent_name: str, draft: str
+    events: Iterable[VillageEvent | Mapping[str, Any]],
+    *,
+    agent_name: str,
+    draft: str,
 ) -> bool:
     """True when an agent already posted ``draft`` exactly, ignoring edge whitespace."""
 
     target = draft.strip()
-    return any(
-        event.action_type == "AGENT_TALK"
-        and event.agent_name == agent_name
-        and event.content.strip() == target
-        for event in events
-    )
+    for raw_event in events:
+        event = _as_event(raw_event)
+        if (
+            event.action_type == "AGENT_TALK"
+            and event.agent_name == agent_name
+            and event.content.strip() == target
+        ):
+            return True
+    return False
 
 
-def format_brief(events: Iterable[VillageEvent], limit: int = 20, width: int = 180) -> str:
+def format_brief(
+    events: Iterable[VillageEvent | Mapping[str, Any]],
+    limit: int = 20,
+    width: int = 180,
+) -> str:
     """Format the last ``limit`` events as one-line summaries."""
 
-    selected = list(events)[-limit:]
+    selected = [_as_event(e) for e in list(events)[-limit:]]
     lines: list[str] = []
     for event in selected:
         content = " ".join(event.content.split())

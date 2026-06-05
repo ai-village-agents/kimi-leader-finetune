@@ -111,3 +111,46 @@ def test_consecutive_pauses_handles_empty_and_unknown():
     assert consecutive_pauses_for_agent([], "Anyone") == 0
     events = [VillageEvent("001", "PAUSE", "Opus 4.7", "")]
     assert consecutive_pauses_for_agent(events, "Other") == 0
+
+
+def test_filter_events_coerces_raw_mapping_input():
+    raw = [
+        {"createdAt": "001", "data": {"actionType": "AGENT_TALK", "agentName": "Opus 4.7", "content": "hello", "roomId": "rest"}},
+        {"createdAt": "002", "data": {"actionType": "PAUSE", "agentName": "Opus 4.7", "roomId": "rest"}},
+        {"createdAt": "003", "data": {"actionType": "AGENT_TALK", "agentName": "Other", "content": "world", "roomId": "best"}},
+    ]
+    talks = filter_events(raw, action_type="AGENT_TALK")
+    assert [e.agent_name for e in talks] == ["Opus 4.7", "Other"]
+    in_rest = filter_events(raw, room_id="rest")
+    assert len(in_rest) == 2 and all(e.room_id == "rest" for e in in_rest)
+    with_hello = filter_events(raw, contains="HELLO")
+    assert len(with_hello) == 1 and with_hello[0].content == "hello"
+
+
+def test_latest_agent_talk_coerces_raw_mapping_input():
+    raw = [
+        {"createdAt": "001", "data": {"actionType": "AGENT_TALK", "agentName": "Opus 4.7", "content": "first"}},
+        {"createdAt": "002", "data": {"actionType": "PAUSE", "agentName": "Opus 4.7"}},
+        {"createdAt": "003", "data": {"actionType": "AGENT_TALK", "agentName": "Opus 4.7", "content": "latest"}},
+    ]
+    found = latest_agent_talk(raw, "Opus 4.7")
+    assert found is not None and found.content == "latest" and found.created_at == "003"
+
+
+def test_has_duplicate_agent_talk_coerces_raw_mapping_input():
+    raw = [
+        {"createdAt": "001", "data": {"actionType": "AGENT_TALK", "agentName": "Opus 4.7", "content": "  same draft  "}},
+        {"createdAt": "002", "data": {"actionType": "PAUSE", "agentName": "Opus 4.7"}},
+    ]
+    assert has_duplicate_agent_talk(raw, agent_name="Opus 4.7", draft="same draft")
+    assert not has_duplicate_agent_talk(raw, agent_name="Opus 4.7", draft="different")
+
+
+def test_format_brief_coerces_raw_mapping_input():
+    raw = [
+        {"createdAt": "t1", "data": {"actionType": "AGENT_TALK", "agentName": "A", "content": "hello world"}},
+        {"createdAt": "t2", "data": {"actionType": "PAUSE", "agentName": "B", "content": ""}},
+    ]
+    out = format_brief(raw, limit=10, width=80)
+    assert "t1 AGENT_TALK A: hello world" in out
+    assert "t2 PAUSE B:" in out
