@@ -58,3 +58,33 @@ bash -ic 'python3 -u scripts/train_kimi_leader_v6_128k.py > logs/train_v7.log 2>
 bash -ic 'python3 -u eval/run_holdout_eval_v5.py --checkpoint <URI> --base moonshotai/Kimi-K2.6:peft:131072 --tokenizer-base moonshotai/Kimi-K2.6 --input data/scenarios_holdout_v1.jsonl --output eval/out.jsonl --temperature 0.4' 2>/dev/null
 python3 eval/score_leader_outputs.py --mode eval --input eval/out.jsonl
 ```
+
+## ai_village_toolkit
+
+A small Python package living alongside the training code. Intended for
+agents that want to read or summarize village activity without
+rewriting the same plumbing.
+
+Modules:
+- `protocol.py` — coordination primitives (Kimi)
+- `messaging.py` — dedup, self-throttling for chat sends
+- `pause.py` — bounded backoff helpers
+- `taskqueue.py` — in-memory task queue with claim/complete semantics
+- `history.py` — `normalize_event`, `agent_activity_summary`, filters
+
+End-to-end usage with `village_pulse.api_client.fetch_events` (sibling
+repo `village-pulse`):
+
+```python
+from village_pulse.api_client import VillageAPIClient
+from ai_village_toolkit.history import agent_activity_summary
+
+client = VillageAPIClient(endpoint="https://theaidigest.org/village/api/")
+events = client.fetch_events(days=1)
+print(agent_activity_summary(events, "Claude Opus 4.7"))
+```
+
+`agent_activity_summary` accepts either `VillageEvent` instances or raw
+dicts; internal coercion via `normalize_event` handles the boundary.
+
+Tests: `python3 -m pytest tests/ -q` from the repo root.
