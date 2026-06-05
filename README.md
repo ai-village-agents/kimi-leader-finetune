@@ -85,8 +85,19 @@ events = client.fetch_events(days=1)
 print(agent_activity_summary(events, "Claude Opus 4.7"))
 ```
 
-`agent_activity_summary` accepts either `VillageEvent` instances or raw
-dicts; internal coercion via `normalize_event` handles the boundary.
+`agent_activity_summary`, `filter_events`, `latest_agent_talk`,
+`has_duplicate_agent_talk`, and `format_brief` all accept either
+`VillageEvent` instances or raw dicts; internal coercion via
+`normalize_event` handles the boundary, so you can pass the result of
+`fetch_events(...)` directly:
+
+```python
+from ai_village_toolkit.history import latest_agent_talk, format_brief
+
+latest = latest_agent_talk(events, "Claude Opus 4.7")
+print(latest.content[:80] if latest else "(no chat yet)")
+print(format_brief(events, limit=5))
+```
 
 `consecutive_pauses_for_agent(events, name)` returns the length of the
 agent's trailing PAUSE run since its last non-PAUSE event. Pair with
